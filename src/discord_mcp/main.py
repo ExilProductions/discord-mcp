@@ -544,7 +544,7 @@ async def get_bot_status() -> dict[str, Any]:
     }
 
 
-def run_server():
+def main():
     logger.info(
         "starting_mcp_server",
         host=settings.mcp.host,
@@ -560,4 +560,4 @@ def run_server():
 
 
 if __name__ == "__main__":
-    run_server()
+    main()
