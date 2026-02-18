@@ -81,8 +81,5 @@ uv run python -m discord_mcp.main
 - `get_guild_settings` - Get server settings (name, description, verification level, etc.)
 - `edit_guild_settings` - Edit server settings
 
-### Event Streaming
-- `stream_discord_events` - Stream Discord events
-
 ### Status
 - `get_bot_status` - Get bot status and session info
