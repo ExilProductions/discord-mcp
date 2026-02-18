@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-discord-mcp = "discord_mcp.main"
+discord-mcp = "discord_mcp.__main__:main"
 
 [dependency-groups]
 dev = [
