@@ -1,36 +1,78 @@
 # Discord MCP Server
 
-A production-grade MCP (Model Context Protocol) server for Discord using FastMCP and discord.py.
+A production-grade **Model Context Protocol (MCP)** server for Discord built with **FastMCP** and **discord.py**.
+Provides a complete API surface for managing channels, roles, permissions, messages, moderation, and server settings via MCP.
 
-## Features
+---
 
-- Per-token bot sessions with automatic session management
-- Channel management (create, edit, delete, organize)
-- Role management (create, edit, delete, manage)
-- Permission configuration for channels, categories, and roles
-- Message operations (send, edit, delete, bulk delete)
-- Moderation actions (timeout, kick, ban, role policy enforcement)
-- Guild/server settings management
+# Features
 
-## Installation
+* Per-token bot sessions with automatic session management
+* Channel management: create, edit, delete, organize
+* Role management: create, edit, delete, assign, remove
+* Permission configuration for channels, categories, and roles
+* Message operations: send, edit, delete, bulk delete, retrieve
+* Moderation actions: timeout, kick, ban, enforce role policies
+* Guild/server settings management
+* Status endpoints for bot sessions
+
+---
+
+# Installation
 
 ```bash
 uv sync
 ```
 
-## Configuration
+---
 
-Copy `.env.template` to `.env` and configure:
+# Configuration
+
+Copy the template `.env` file and modify it as needed:
 
 ```bash
 cp .env.template .env
 ```
 
-## Usage
+---
+
+# Usage
+
+Run the MCP server locally:
 
 ```bash
 uv run python -m discord_mcp.main
 ```
+
+Or use it without a local setup:
+
+```bash
+uv run --with git+https://github.com/ExilProductions/discord-mcp discord-mcp
+```
+
+---
+
+# MCP Client Configuration Example
+
+Example configuration for **OpenCode** using a remote MCP server:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "discord-mcp": {
+      "type": "remote",
+      "url": "http://localhost:8000/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "YOUR_DISCORD_BOT_TOKEN"
+      }
+    }
+  }
+}
+```
+
+This can be used by any client that supports MCP.
 
 ## MCP Tools
 
