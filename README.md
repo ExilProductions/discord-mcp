@@ -14,6 +14,16 @@ Provides a complete API surface for managing channels, roles, permissions, messa
 * Message operations: send, edit, delete, bulk delete, retrieve
 * Moderation actions: timeout, kick, ban, enforce role policies
 * Guild/server settings management
+* Polls: create, end, and get results
+* Scheduled events: create, edit, delete, list, get attendees
+* Threads & forums: create, edit, delete, manage members, forum posts
+* Webhooks: create, send messages, list, delete
+* Invites: create, list, delete
+* Emoji & stickers: create, delete, list
+* Reactions: add, remove, list users, clear
+* AutoMod: create, edit, delete, list rules
+* Audit log: query with filters
+* Member info: get details, list members, edit nicknames/mute/deafen
 * Status endpoints for bot sessions
 
 ---
@@ -122,6 +132,64 @@ This can be used by any client that supports MCP.
 ### Guild Management
 - `get_guild_settings` - Get server settings (name, description, verification level, etc.)
 - `edit_guild_settings` - Edit server settings
+
+### Polls
+- `create_poll` - Create a poll in a channel
+- `end_poll` - End an active poll
+- `get_poll_results` - Get poll vote counts and results
+
+### Scheduled Events
+- `create_scheduled_event` - Create a scheduled event (voice, stage, or external)
+- `edit_scheduled_event` - Edit a scheduled event
+- `delete_scheduled_event` - Delete a scheduled event
+- `list_scheduled_events` - List all scheduled events in a guild
+- `get_scheduled_event_users` - Get users interested in an event
+
+### Threads & Forums
+- `create_thread` - Create a thread (optionally from a message)
+- `edit_thread` - Edit thread settings (name, archive, lock, slowmode)
+- `delete_thread` - Delete a thread
+- `list_threads` - List active and archived threads in a channel
+- `add_thread_member` - Add a member to a thread
+- `remove_thread_member` - Remove a member from a thread
+- `create_forum_post` - Create a forum post with tags
+
+### Webhooks
+- `create_webhook` - Create a webhook for a channel
+- `send_webhook_message` - Send a message via webhook
+- `list_webhooks` - List webhooks for a guild or channel
+- `delete_webhook` - Delete a webhook
+
+### Invites
+- `create_invite` - Create a channel invite
+- `list_invites` - List all guild invites
+- `delete_invite` - Delete an invite
+
+### Emoji & Stickers
+- `create_emoji` - Create a custom emoji
+- `delete_emoji` - Delete a custom emoji
+- `list_emojis` - List all custom emojis in a guild
+- `list_stickers` - List all stickers in a guild
+
+### Reactions
+- `add_reaction` - Add a reaction to a message
+- `remove_reaction` - Remove a reaction from a message
+- `get_reaction_users` - Get users who reacted with a specific emoji
+- `clear_reactions` - Clear all or specific reactions from a message
+
+### AutoMod
+- `create_automod_rule` - Create an automod rule (keyword, spam, preset, mention spam)
+- `edit_automod_rule` - Edit an automod rule
+- `delete_automod_rule` - Delete an automod rule
+- `list_automod_rules` - List all automod rules in a guild
+
+### Audit Log
+- `get_audit_log` - Query audit log with filters (user, action type, limit)
+
+### Members
+- `get_member_info` - Get detailed member profile info
+- `list_members` - List guild members
+- `edit_member` - Edit member (nickname, mute, deafen)
 
 ### Status
 - `get_bot_status` - Get bot status and session info
