@@ -58,3 +58,43 @@ class ValidationException(DiscordMCPException):
 
 class EventStreamException(DiscordMCPException):
     pass
+
+
+class PollException(DiscordMCPException):
+    pass
+
+
+class EventException(DiscordMCPException):
+    pass
+
+
+class ThreadException(DiscordMCPException):
+    pass
+
+
+class WebhookException(DiscordMCPException):
+    pass
+
+
+class InviteException(DiscordMCPException):
+    pass
+
+
+class EmojiException(DiscordMCPException):
+    pass
+
+
+class ReactionException(DiscordMCPException):
+    pass
+
+
+class AutoModException(DiscordMCPException):
+    pass
+
+
+class AuditLogException(DiscordMCPException):
+    pass
+
+
+class MemberException(DiscordMCPException):
+    pass

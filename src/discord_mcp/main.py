@@ -7,19 +7,42 @@ from discord_mcp.discord.session import session_manager
 from discord_mcp.mcp.context import get_current_session
 from discord_mcp.mcp.server import mcp
 from discord_mcp.tools import (
+    add_reaction,
+    add_thread_member,
     assign_role,
     ban_user,
     bulk_delete_messages,
+    clear_reactions,
+    create_automod_rule,
     create_channel,
+    create_emoji,
+    create_forum_post,
+    create_invite,
+    create_poll,
     create_role,
+    create_scheduled_event,
+    create_thread,
+    create_webhook,
+    delete_automod_rule,
     delete_channel,
+    delete_emoji,
+    delete_invite,
     delete_message,
     delete_role,
+    delete_scheduled_event,
+    delete_thread,
+    delete_webhook,
+    edit_automod_rule,
     edit_channel,
     edit_guild_settings,
+    edit_member,
     edit_message,
     edit_role,
+    edit_scheduled_event,
+    edit_thread,
+    end_poll,
     enforce_role_policy,
+    get_audit_log,
     get_category_permissions,
     get_channel,
     get_channel_messages,
@@ -27,16 +50,31 @@ from discord_mcp.tools import (
     get_channels,
     get_guild_bans,
     get_guild_settings,
+    get_member_info,
     get_member_timeout_status,
     get_message,
+    get_poll_results,
+    get_reaction_users,
     get_role,
     get_roles,
+    get_scheduled_event_users,
     kick_user,
+    list_automod_rules,
+    list_emojis,
+    list_invites,
+    list_members,
+    list_scheduled_events,
+    list_stickers,
+    list_threads,
+    list_webhooks,
     move_channel,
     remove_channel_permissions,
+    remove_reaction,
     remove_role,
+    remove_thread_member,
     remove_timeout,
     send_message,
+    send_webhook_message,
     set_category_permissions,
     set_channel_permissions,
     set_role_permissions,
@@ -47,6 +85,9 @@ from discord_mcp.utils.logging import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)
+
+
+# ── Channel Tools ──────────────────────────────────────────────────────────
 
 
 @mcp.tool()
@@ -224,6 +265,8 @@ async def create_new_role(
     mentionable: bool = False,
     permissions: str | None = None,
 ) -> dict[str, Any]:
+    if color < 0 or color > 16777215:
+        raise ValueError(f"Color must be between 0 and 16777215 (0xFFFFFF), got {color}")
     return await create_role(
         guild_id=guild_id,
         name=name,
@@ -542,6 +585,406 @@ async def get_bot_status() -> dict[str, Any]:
         "total_sessions": len(sessions),
         "sessions": sessions,
     }
+
+
+@mcp.tool()
+async def create_channel_poll(
+    channel_id: str,
+    question: str,
+    answers: list[str],
+    duration_hours: int = 24,
+    allow_multiselect: bool = False,
+) -> dict[str, Any]:
+    return await create_poll(
+        channel_id=channel_id,
+        question=question,
+        answers=answers,
+        duration_hours=duration_hours,
+        allow_multiselect=allow_multiselect,
+    )
+
+
+@mcp.tool()
+async def end_channel_poll(channel_id: str, message_id: str) -> dict[str, Any]:
+    return await end_poll(channel_id=channel_id, message_id=message_id)
+
+
+@mcp.tool()
+async def get_channel_poll_results(channel_id: str, message_id: str) -> dict[str, Any]:
+    return await get_poll_results(channel_id=channel_id, message_id=message_id)
+
+
+@mcp.tool()
+async def create_guild_scheduled_event(
+    guild_id: str,
+    name: str,
+    start_time: str,
+    end_time: str | None = None,
+    description: str | None = None,
+    channel_id: str | None = None,
+    location: str | None = None,
+    entity_type: str = "voice",
+    privacy_level: str = "guild_only",
+) -> dict[str, Any]:
+    return await create_scheduled_event(
+        guild_id=guild_id,
+        name=name,
+        start_time=start_time,
+        end_time=end_time,
+        description=description,
+        channel_id=channel_id,
+        location=location,
+        entity_type=entity_type,
+        privacy_level=privacy_level,
+    )
+
+
+@mcp.tool()
+async def edit_guild_scheduled_event(
+    guild_id: str,
+    event_id: str,
+    name: str | None = None,
+    description: str | None = None,
+    start_time: str | None = None,
+    end_time: str | None = None,
+    status: str | None = None,
+    channel_id: str | None = None,
+    location: str | None = None,
+) -> dict[str, Any]:
+    return await edit_scheduled_event(
+        guild_id=guild_id,
+        event_id=event_id,
+        name=name,
+        description=description,
+        start_time=start_time,
+        end_time=end_time,
+        status=status,
+        channel_id=channel_id,
+        location=location,
+    )
+
+
+@mcp.tool()
+async def delete_guild_scheduled_event(guild_id: str, event_id: str) -> dict[str, Any]:
+    return await delete_scheduled_event(guild_id=guild_id, event_id=event_id)
+
+
+@mcp.tool()
+async def list_guild_scheduled_events(guild_id: str) -> list[dict[str, Any]]:
+    return await list_scheduled_events(guild_id=guild_id)
+
+
+@mcp.tool()
+async def get_guild_scheduled_event_users(
+    guild_id: str, event_id: str, limit: int = 100
+) -> list[dict[str, Any]]:
+    return await get_scheduled_event_users(
+        guild_id=guild_id, event_id=event_id, limit=limit
+    )
+
+
+@mcp.tool()
+async def create_channel_thread(
+    channel_id: str,
+    name: str,
+    message_id: str | None = None,
+    auto_archive_duration: int = 1440,
+    slowmode_delay: int | None = None,
+) -> dict[str, Any]:
+    return await create_thread(
+        channel_id=channel_id,
+        name=name,
+        message_id=message_id,
+        auto_archive_duration=auto_archive_duration,
+        slowmode_delay=slowmode_delay,
+    )
+
+
+@mcp.tool()
+async def edit_channel_thread(
+    thread_id: str,
+    name: str | None = None,
+    archived: bool | None = None,
+    locked: bool | None = None,
+    slowmode_delay: int | None = None,
+    auto_archive_duration: int | None = None,
+) -> dict[str, Any]:
+    return await edit_thread(
+        thread_id=thread_id,
+        name=name,
+        archived=archived,
+        locked=locked,
+        slowmode_delay=slowmode_delay,
+        auto_archive_duration=auto_archive_duration,
+    )
+
+
+@mcp.tool()
+async def delete_channel_thread(thread_id: str) -> dict[str, Any]:
+    return await delete_thread(thread_id=thread_id)
+
+
+@mcp.tool()
+async def list_channel_threads(channel_id: str) -> list[dict[str, Any]]:
+    return await list_threads(channel_id=channel_id)
+
+
+@mcp.tool()
+async def add_member_to_thread(thread_id: str, user_id: str) -> dict[str, Any]:
+    return await add_thread_member(thread_id=thread_id, user_id=user_id)
+
+
+@mcp.tool()
+async def remove_member_from_thread(thread_id: str, user_id: str) -> dict[str, Any]:
+    return await remove_thread_member(thread_id=thread_id, user_id=user_id)
+
+
+@mcp.tool()
+async def create_forum_channel_post(
+    channel_id: str,
+    name: str,
+    content: str,
+    tags: list[str] | None = None,
+) -> dict[str, Any]:
+    return await create_forum_post(
+        channel_id=channel_id,
+        name=name,
+        content=content,
+        tags=tags,
+    )
+
+
+@mcp.tool()
+async def create_channel_webhook(
+    channel_id: str, name: str, reason: str | None = None
+) -> dict[str, Any]:
+    return await create_webhook(channel_id=channel_id, name=name, reason=reason)
+
+
+@mcp.tool()
+async def send_message_via_webhook(
+    webhook_id: str,
+    content: str,
+    username: str | None = None,
+    avatar_url: str | None = None,
+) -> dict[str, Any]:
+    return await send_webhook_message(
+        webhook_id=webhook_id,
+        content=content,
+        username=username,
+        avatar_url=avatar_url,
+    )
+
+
+@mcp.tool()
+async def list_guild_webhooks(
+    guild_id: str | None = None, channel_id: str | None = None
+) -> list[dict[str, Any]]:
+    return await list_webhooks(guild_id=guild_id, channel_id=channel_id)
+
+
+@mcp.tool()
+async def delete_guild_webhook(webhook_id: str) -> dict[str, Any]:
+    return await delete_webhook(webhook_id=webhook_id)
+
+
+@mcp.tool()
+async def create_channel_invite(
+    channel_id: str,
+    max_age: int = 86400,
+    max_uses: int = 0,
+    temporary: bool = False,
+    unique: bool = True,
+) -> dict[str, Any]:
+    return await create_invite(
+        channel_id=channel_id,
+        max_age=max_age,
+        max_uses=max_uses,
+        temporary=temporary,
+        unique=unique,
+    )
+
+
+@mcp.tool()
+async def list_guild_invites(guild_id: str) -> list[dict[str, Any]]:
+    return await list_invites(guild_id=guild_id)
+
+
+@mcp.tool()
+async def delete_guild_invite(invite_code: str) -> dict[str, Any]:
+    return await delete_invite(invite_code=invite_code)
+
+
+@mcp.tool()
+async def create_guild_emoji(
+    guild_id: str, name: str, image_base64: str
+) -> dict[str, Any]:
+    return await create_emoji(guild_id=guild_id, name=name, image_base64=image_base64)
+
+
+@mcp.tool()
+async def delete_guild_emoji(guild_id: str, emoji_id: str) -> dict[str, Any]:
+    return await delete_emoji(guild_id=guild_id, emoji_id=emoji_id)
+
+
+@mcp.tool()
+async def list_guild_emojis(guild_id: str) -> list[dict[str, Any]]:
+    return await list_emojis(guild_id=guild_id)
+
+
+@mcp.tool()
+async def list_guild_stickers(guild_id: str) -> list[dict[str, Any]]:
+    return await list_stickers(guild_id=guild_id)
+
+
+@mcp.tool()
+async def add_message_reaction(
+    channel_id: str, message_id: str, emoji: str
+) -> dict[str, Any]:
+    return await add_reaction(
+        channel_id=channel_id, message_id=message_id, emoji=emoji
+    )
+
+
+@mcp.tool()
+async def remove_message_reaction(
+    channel_id: str,
+    message_id: str,
+    emoji: str,
+    user_id: str | None = None,
+) -> dict[str, Any]:
+    return await remove_reaction(
+        channel_id=channel_id,
+        message_id=message_id,
+        emoji=emoji,
+        user_id=user_id,
+    )
+
+
+@mcp.tool()
+async def get_message_reaction_users(
+    channel_id: str,
+    message_id: str,
+    emoji: str,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    return await get_reaction_users(
+        channel_id=channel_id,
+        message_id=message_id,
+        emoji=emoji,
+        limit=limit,
+    )
+
+
+@mcp.tool()
+async def clear_message_reactions(
+    channel_id: str,
+    message_id: str,
+    emoji: str | None = None,
+) -> dict[str, Any]:
+    return await clear_reactions(
+        channel_id=channel_id, message_id=message_id, emoji=emoji
+    )
+
+
+@mcp.tool()
+async def create_guild_automod_rule(
+    guild_id: str,
+    name: str,
+    trigger_type: str,
+    trigger_metadata: dict[str, Any] | None = None,
+    actions: list[dict[str, Any]] | None = None,
+    enabled: bool = True,
+    exempt_roles: list[str] | None = None,
+    exempt_channels: list[str] | None = None,
+) -> dict[str, Any]:
+    return await create_automod_rule(
+        guild_id=guild_id,
+        name=name,
+        trigger_type=trigger_type,
+        trigger_metadata=trigger_metadata,
+        actions=actions,
+        enabled=enabled,
+        exempt_roles=exempt_roles,
+        exempt_channels=exempt_channels,
+    )
+
+
+@mcp.tool()
+async def edit_guild_automod_rule(
+    guild_id: str,
+    rule_id: str,
+    name: str | None = None,
+    trigger_metadata: dict[str, Any] | None = None,
+    actions: list[dict[str, Any]] | None = None,
+    enabled: bool | None = None,
+    exempt_roles: list[str] | None = None,
+    exempt_channels: list[str] | None = None,
+) -> dict[str, Any]:
+    return await edit_automod_rule(
+        guild_id=guild_id,
+        rule_id=rule_id,
+        name=name,
+        trigger_metadata=trigger_metadata,
+        actions=actions,
+        enabled=enabled,
+        exempt_roles=exempt_roles,
+        exempt_channels=exempt_channels,
+    )
+
+
+@mcp.tool()
+async def delete_guild_automod_rule(guild_id: str, rule_id: str) -> dict[str, Any]:
+    return await delete_automod_rule(guild_id=guild_id, rule_id=rule_id)
+
+
+@mcp.tool()
+async def list_guild_automod_rules(guild_id: str) -> list[dict[str, Any]]:
+    return await list_automod_rules(guild_id=guild_id)
+
+
+@mcp.tool()
+async def get_guild_audit_log(
+    guild_id: str,
+    user_id: str | None = None,
+    action_type: int | None = None,
+    limit: int = 50,
+    before: str | None = None,
+) -> list[dict[str, Any]]:
+    return await get_audit_log(
+        guild_id=guild_id,
+        user_id=user_id,
+        action_type=action_type,
+        limit=limit,
+        before=before,
+    )
+
+
+@mcp.tool()
+async def get_guild_member_info(guild_id: str, user_id: str) -> dict[str, Any]:
+    return await get_member_info(guild_id=guild_id, user_id=user_id)
+
+
+@mcp.tool()
+async def list_guild_members(guild_id: str, limit: int = 100) -> list[dict[str, Any]]:
+    return await list_members(guild_id=guild_id, limit=limit)
+
+
+@mcp.tool()
+async def edit_guild_member(
+    guild_id: str,
+    user_id: str,
+    nickname: str | None = None,
+    mute: bool | None = None,
+    deafen: bool | None = None,
+) -> dict[str, Any]:
+    return await edit_member(
+        guild_id=guild_id,
+        user_id=user_id,
+        nickname=nickname,
+        mute=mute,
+        deafen=deafen,
+    )
 
 
 def main():

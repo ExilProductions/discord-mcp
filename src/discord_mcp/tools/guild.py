@@ -111,9 +111,9 @@ async def edit_guild_settings(
         kwargs["verification_level"] = verification_map[verification_level.lower()]
 
     explicit_filter_map = {
-        "disabled": discord.ExplicitContentFilter.disabled,
-        "members_without_roles": discord.ExplicitContentFilter.members_without_roles,
-        "all_members": discord.ExplicitContentFilter.all_members,
+        "disabled": discord.ContentFilter.disabled,
+        "members_without_roles": discord.ContentFilter.members_without_roles,
+        "all_members": discord.ContentFilter.all_members,
     }
     if explicit_content_filter and explicit_content_filter.lower() in explicit_filter_map:
         kwargs["explicit_content_filter"] = explicit_filter_map[explicit_content_filter.lower()]
