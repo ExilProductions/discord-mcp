@@ -12,7 +12,7 @@ class MCPSettings(BaseSettings):
         extra="ignore",
     )
 
-    host: str = Field(default="0.0.0.0", description="MCP server host")
+    host: str = Field(default="127.0.0.1", description="MCP server host")
     port: int = Field(default=8000, description="MCP server port")
     log_level: str = Field(default="INFO", description="Logging level")
 

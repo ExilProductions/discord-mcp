@@ -57,6 +57,7 @@ from discord_mcp.tools import (
     get_reaction_users,
     get_role,
     get_roles,
+    reorder_role,
     get_scheduled_event_users,
     kick_user,
     list_automod_rules,
@@ -259,17 +260,19 @@ async def get_channel_info(channel_id: str) -> dict[str, Any]:
 @mcp.tool()
 async def create_new_role(
     guild_id: str,
-    name: str,
+    name: str | None = None,
+    role_name: str | None = None,
     color: int = 0,
     hoist: bool = False,
     mentionable: bool = False,
     permissions: str | None = None,
 ) -> dict[str, Any]:
+    resolved_name = role_name or name or "new-role"
     if color < 0 or color > 16777215:
         raise ValueError(f"Color must be between 0 and 16777215 (0xFFFFFF), got {color}")
     return await create_role(
         guild_id=guild_id,
-        name=name,
+        name=resolved_name,
         color=color,
         hoist=hoist,
         mentionable=mentionable,
@@ -329,6 +332,15 @@ async def list_roles(guild_id: str) -> list[dict[str, Any]]:
 @mcp.tool()
 async def get_role_info(role_id: str, guild_id: str) -> dict[str, Any]:
     return await get_role(role_id=role_id, guild_id=guild_id)
+
+
+@mcp.tool()
+async def reorder_roles(
+    role_id: str,
+    guild_id: str,
+    position: int,
+) -> dict[str, Any]:
+    return await reorder_role(role_id=role_id, guild_id=guild_id, position=position)
 
 
 @mcp.tool()

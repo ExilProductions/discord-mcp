@@ -385,3 +385,55 @@ async def get_role(role_id: str, guild_id: str) -> dict[str, Any]:
         "managed": role.managed,
         "mentionable": role.mentionable,
     }
+
+
+async def reorder_role(
+    role_id: str,
+    guild_id: str,
+    position: int,
+) -> dict[str, Any]:
+    session = await get_current_session()
+    client = session.client
+
+    if not client:
+        from discord_mcp.discord.exceptions import SessionException
+
+        raise SessionException("Client not initialized")
+
+    guild = client.get_guild(int(guild_id))
+    if not guild:
+        from discord_mcp.discord.exceptions import RoleException
+
+        raise RoleException(
+            f"Guild {guild_id} not found",
+            details={"guild_id": guild_id},
+        )
+
+    role = guild.get_role(int(role_id))
+    if not role:
+        from discord_mcp.discord.exceptions import RoleException
+
+        raise RoleException(
+            f"Role {role_id} not found",
+            details={"role_id": role_id},
+        )
+
+    try:
+        await role.edit(position=position)
+    except discord.HTTPException as e:
+        _handle_discord_error(e)
+
+    await _with_status("Reordering role")
+    logger.info(
+        "role_reordered",
+        role_id=role_id,
+        guild_id=guild_id,
+        position=position,
+    )
+
+    return {
+        "success": True,
+        "role_id": role_id,
+        "guild_id": guild_id,
+        "position": role.position,
+    }

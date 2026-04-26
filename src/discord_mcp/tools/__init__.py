@@ -86,6 +86,7 @@ from discord_mcp.tools.roles import (
     edit_role,
     get_role,
     get_roles,
+    reorder_role,
     remove_role,
 )
 from discord_mcp.tools.threads import (
@@ -120,6 +121,7 @@ __all__ = [
     "remove_role",
     "get_role",
     "get_roles",
+    "reorder_role",
     # Permissions
     "set_channel_permissions",
     "set_category_permissions",

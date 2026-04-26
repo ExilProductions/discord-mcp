@@ -112,7 +112,13 @@ async def edit_guild_settings(
 
     explicit_filter_map = {
         "disabled": discord.ContentFilter.disabled,
-        "members_without_roles": discord.ContentFilter.members_without_roles,
+        # discord.py 2.x renamed this enum from `members_without_roles` to `no_role`.
+        "members_without_roles": getattr(
+            discord.ContentFilter,
+            "members_without_roles",
+            discord.ContentFilter.no_role,
+        ),
+        "no_role": discord.ContentFilter.no_role,
         "all_members": discord.ContentFilter.all_members,
     }
     if explicit_content_filter and explicit_content_filter.lower() in explicit_filter_map:
