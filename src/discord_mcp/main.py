@@ -57,7 +57,6 @@ from discord_mcp.tools import (
     get_reaction_users,
     get_role,
     get_roles,
-    reorder_role,
     get_scheduled_event_users,
     kick_user,
     list_automod_rules,
@@ -194,6 +193,19 @@ async def edit_voice_channel(
 
 
 @mcp.tool()
+async def edit_category(
+    channel_id: str,
+    name: str | None = None,
+    position: int | None = None,
+) -> dict[str, Any]:
+    return await edit_channel(
+        channel_id=channel_id,
+        name=name,
+        position=position,
+    )
+
+
+@mcp.tool()
 async def remove_channel(channel_id: str, guild_id: str) -> dict[str, Any]:
     return await delete_channel(channel_id=channel_id, guild_id=guild_id)
 
@@ -202,7 +214,7 @@ async def remove_channel(channel_id: str, guild_id: str) -> dict[str, Any]:
 async def move_channel_to_category(
     channel_id: str,
     guild_id: str,
-    parent_id: str,
+    parent_id: str | None = None,
     lock_permissions: bool = False,
 ) -> dict[str, Any]:
     return await move_channel(
@@ -210,19 +222,6 @@ async def move_channel_to_category(
         guild_id=guild_id,
         parent_id=parent_id,
         lock_permissions=lock_permissions,
-    )
-
-
-@mcp.tool()
-async def reorder_channels(
-    channel_id: str,
-    guild_id: str,
-    position: int,
-) -> dict[str, Any]:
-    return await move_channel(
-        channel_id=channel_id,
-        guild_id=guild_id,
-        position=position,
     )
 
 
@@ -286,6 +285,7 @@ async def modify_role(
     guild_id: str,
     name: str | None = None,
     color: int | None = None,
+    position: int | None = None,
     hoist: bool | None = None,
     mentionable: bool | None = None,
     permissions: str | None = None,
@@ -295,6 +295,7 @@ async def modify_role(
         guild_id=guild_id,
         name=name,
         color=color,
+        position=position,
         hoist=hoist,
         mentionable=mentionable,
         permissions=permissions,
@@ -332,15 +333,6 @@ async def list_roles(guild_id: str) -> list[dict[str, Any]]:
 @mcp.tool()
 async def get_role_info(role_id: str, guild_id: str) -> dict[str, Any]:
     return await get_role(role_id=role_id, guild_id=guild_id)
-
-
-@mcp.tool()
-async def reorder_roles(
-    role_id: str,
-    guild_id: str,
-    position: int,
-) -> dict[str, Any]:
-    return await reorder_role(role_id=role_id, guild_id=guild_id, position=position)
 
 
 @mcp.tool()
