@@ -63,6 +63,7 @@ from discord_mcp.tools.moderation import (
 from discord_mcp.tools.permissions import (
     get_category_permissions,
     get_channel_permissions,
+    inspect_effective_permissions,
     remove_channel_permissions,
     set_category_permissions,
     set_channel_permissions,
@@ -127,6 +128,7 @@ __all__ = [
     "get_channel_permissions",
     "get_category_permissions",
     "remove_channel_permissions",
+    "inspect_effective_permissions",
     # Messages
     "send_message",
     "edit_message",

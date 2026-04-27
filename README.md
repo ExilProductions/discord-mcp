@@ -8,9 +8,10 @@ Provides a complete API surface for managing channels, roles, permissions, messa
 # Features
 
 * Per-token bot sessions with automatic session management
-* Channel management: create, edit, delete, organize
-* Role management: create, edit, delete, assign, remove
+* Channel management: create, edit, delete, move, and reorder via position
+* Role management: create, edit (including position), delete, assign, remove
 * Permission configuration for channels, categories, and roles
+* "View as role/member" permission inspection across guild and channels
 * Message operations: send, edit, delete, bulk delete, retrieve
 * Moderation actions: timeout, kick, ban, enforce role policies
 * Guild/server settings management
@@ -42,6 +43,13 @@ Copy the template `.env` file and modify it as needed:
 
 ```bash
 cp .env.template .env
+```
+
+Default bind is local-only:
+
+```env
+MCP_HOST=127.0.0.1
+MCP_PORT=8000
 ```
 
 ---
@@ -90,13 +98,14 @@ This can be used by any client that supports MCP.
 - `create_channel` - Create a text, voice, news, stage, forum, media, or category channel
 - `edit_channel` - Edit a channel's settings
 - `delete_channel` - Delete a channel
-- `move_channel` - Move channel to new position/category
+- `move_channel` - Move channel to a category
+- `edit_channel` with `position` - Reorder channels/categories
 - `get_channel` - Get channel information
 - `get_channels` - List all channels in guild
 
 ### Role Management
 - `create_role` - Create a new role
-- `edit_role` - Edit a role
+- `edit_role` - Edit a role (including `position` for reorder)
 - `delete_role` - Delete a role
 - `assign_role` - Assign role to member
 - `remove_role` - Remove role from member
@@ -110,6 +119,8 @@ This can be used by any client that supports MCP.
 - `get_channel_permissions` - Get channel permission overwrites
 - `get_category_permissions` - Get category permission overwrites
 - `remove_channel_permissions` - Remove permission overwrites
+- `inspect_role_permissions` - Evaluate effective guild + channel permissions for a role ("View Server As Role")
+- `inspect_member_permissions` - Evaluate effective guild + channel permissions for a member ("View Server As Member")
 
 ### Message Operations
 - `send_message` - Send a message (supports embeds, TTS, mentions, references)

@@ -356,3 +356,137 @@ async def remove_channel_permissions(
         "target_id": target_id,
         "target_type": target_type,
     }
+
+
+def _permissions_to_dict(perms: discord.Permissions) -> dict[str, bool]:
+    return {name: value for name, value in perms}
+
+
+def _summarize_allowed_denied(perms: discord.Permissions) -> tuple[list[str], list[str]]:
+    allowed = []
+    denied = []
+    for name, value in perms:
+        if value:
+            allowed.append(name)
+        else:
+            denied.append(name)
+    return allowed, denied
+
+
+async def inspect_effective_permissions(
+    guild_id: str,
+    target_id: str,
+    target_type: str,
+) -> dict[str, Any]:
+    session = await get_current_session()
+    client = session.client
+
+    if not client:
+        from discord_mcp.discord.exceptions import SessionException
+
+        raise SessionException("Client not initialized")
+
+    guild = client.get_guild(int(guild_id))
+    if not guild:
+        from discord_mcp.discord.exceptions import PermissionException
+
+        raise PermissionException(
+            f"Guild {guild_id} not found",
+            details={"guild_id": guild_id},
+        )
+
+    if target_type == "role":
+        target = guild.get_role(int(target_id))
+    elif target_type == "member":
+        target = guild.get_member(int(target_id))
+    else:
+        from discord_mcp.discord.exceptions import PermissionException
+
+        raise PermissionException(
+            f"Invalid target type: {target_type}",
+            details={"target_type": target_type},
+        )
+
+    if not target:
+        from discord_mcp.discord.exceptions import PermissionException
+
+        raise PermissionException(
+            f"Target {target_id} not found",
+            details={"target_id": target_id, "target_type": target_type},
+        )
+
+    guild_permissions = (
+        target.permissions
+        if isinstance(target, discord.Role)
+        else target.guild_permissions
+    )
+    guild_allowed, guild_denied = _summarize_allowed_denied(guild_permissions)
+
+    channel_permissions: list[dict[str, Any]] = []
+    accessible_channels: list[str] = []
+    inaccessible_channels: list[str] = []
+
+    for channel in guild.channels:
+        perms = channel.permissions_for(target)
+        can_view = perms.view_channel
+        if can_view:
+            accessible_channels.append(str(channel.id))
+        else:
+            inaccessible_channels.append(str(channel.id))
+        allowed, denied = _summarize_allowed_denied(perms)
+        channel_permissions.append(
+            {
+                "channel_id": str(channel.id),
+                "channel_name": channel.name,
+                "channel_type": str(channel.type),
+                "category_id": str(channel.category_id) if channel.category_id else None,
+                "position": channel.position,
+                "can_view": can_view,
+                "can_send_messages": getattr(perms, "send_messages", False),
+                "can_read_history": getattr(perms, "read_message_history", False),
+                "can_connect_voice": getattr(perms, "connect", False),
+                "can_speak_voice": getattr(perms, "speak", False),
+                "can_manage_channel": getattr(perms, "manage_channels", False),
+                "can_manage_permissions": getattr(perms, "manage_roles", False),
+                "can_manage_messages": getattr(perms, "manage_messages", False),
+                "can_manage_threads": getattr(perms, "manage_threads", False),
+                "can_create_public_threads": getattr(perms, "create_public_threads", False),
+                "can_create_private_threads": getattr(
+                    perms, "create_private_threads", False
+                ),
+                "allowed_permissions": allowed,
+                "denied_permissions": denied,
+                "permissions": _permissions_to_dict(perms),
+            }
+        )
+
+    await _with_status("Inspecting effective permissions")
+    logger.info(
+        "effective_permissions_inspected",
+        guild_id=guild_id,
+        target_id=target_id,
+        target_type=target_type,
+    )
+
+    return {
+        "guild_id": guild_id,
+        "target_id": target_id,
+        "target_type": target_type,
+        "target_name": target.name,
+        "guild_permissions": _permissions_to_dict(guild_permissions),
+        "guild_allowed_permissions": guild_allowed,
+        "guild_denied_permissions": guild_denied,
+        "can_administrator": getattr(guild_permissions, "administrator", False),
+        "can_manage_guild": getattr(guild_permissions, "manage_guild", False),
+        "can_manage_roles": getattr(guild_permissions, "manage_roles", False),
+        "can_manage_channels": getattr(guild_permissions, "manage_channels", False),
+        "can_kick_members": getattr(guild_permissions, "kick_members", False),
+        "can_ban_members": getattr(guild_permissions, "ban_members", False),
+        "can_moderate_members": getattr(guild_permissions, "moderate_members", False),
+        "channel_count": len(channel_permissions),
+        "accessible_channel_count": len(accessible_channels),
+        "inaccessible_channel_count": len(inaccessible_channels),
+        "accessible_channel_ids": accessible_channels,
+        "inaccessible_channel_ids": inaccessible_channels,
+        "channels": channel_permissions,
+    }

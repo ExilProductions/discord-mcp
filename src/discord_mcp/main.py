@@ -68,6 +68,7 @@ from discord_mcp.tools import (
     list_threads,
     list_webhooks,
     move_channel,
+    inspect_effective_permissions,
     remove_channel_permissions,
     remove_reaction,
     remove_role,
@@ -402,6 +403,24 @@ async def clear_channel_permissions(
         channel_id=channel_id,
         target_id=target_id,
         target_type=target_type,
+    )
+
+
+@mcp.tool()
+async def inspect_role_permissions(guild_id: str, role_id: str) -> dict[str, Any]:
+    return await inspect_effective_permissions(
+        guild_id=guild_id,
+        target_id=role_id,
+        target_type="role",
+    )
+
+
+@mcp.tool()
+async def inspect_member_permissions(guild_id: str, user_id: str) -> dict[str, Any]:
+    return await inspect_effective_permissions(
+        guild_id=guild_id,
+        target_id=user_id,
+        target_type="member",
     )
 
 
