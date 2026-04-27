@@ -69,6 +69,9 @@ from discord_mcp.tools import (
     list_webhooks,
     move_channel,
     inspect_effective_permissions,
+    inspect_target_channel_permissions as inspect_target_channel_permissions_impl,
+    list_target_accessible_channels as list_target_accessible_channels_impl,
+    list_target_inaccessible_channels as list_target_inaccessible_channels_impl,
     remove_channel_permissions,
     remove_reaction,
     remove_role,
@@ -407,20 +410,89 @@ async def clear_channel_permissions(
 
 
 @mcp.tool()
-async def inspect_role_permissions(guild_id: str, role_id: str) -> dict[str, Any]:
+async def inspect_role_permissions(
+    guild_id: str,
+    role_id: str,
+    preview_limit: int = 20,
+    include_permission_maps: bool = False,
+    max_channels: int | None = None,
+) -> dict[str, Any]:
     return await inspect_effective_permissions(
         guild_id=guild_id,
         target_id=role_id,
         target_type="role",
+        preview_limit=preview_limit,
+        include_permission_maps=include_permission_maps,
+        max_channels=max_channels,
     )
 
 
 @mcp.tool()
-async def inspect_member_permissions(guild_id: str, user_id: str) -> dict[str, Any]:
+async def inspect_member_permissions(
+    guild_id: str,
+    user_id: str,
+    preview_limit: int = 20,
+    include_permission_maps: bool = False,
+    max_channels: int | None = None,
+) -> dict[str, Any]:
     return await inspect_effective_permissions(
         guild_id=guild_id,
         target_id=user_id,
         target_type="member",
+        preview_limit=preview_limit,
+        include_permission_maps=include_permission_maps,
+        max_channels=max_channels,
+    )
+
+
+@mcp.tool()
+async def inspect_target_channel_permissions(
+    guild_id: str,
+    target_id: str,
+    target_type: str,
+    channel_id: str,
+    include_permission_map: bool = True,
+) -> dict[str, Any]:
+    return await inspect_target_channel_permissions_impl(
+        guild_id=guild_id,
+        target_id=target_id,
+        target_type=target_type,
+        channel_id=channel_id,
+        include_permission_map=include_permission_map,
+    )
+
+
+@mcp.tool()
+async def list_target_accessible_channels(
+    guild_id: str,
+    target_id: str,
+    target_type: str,
+    include_basic_capabilities: bool = False,
+    max_channels: int | None = None,
+) -> dict[str, Any]:
+    return await list_target_accessible_channels_impl(
+        guild_id=guild_id,
+        target_id=target_id,
+        target_type=target_type,
+        include_basic_capabilities=include_basic_capabilities,
+        max_channels=max_channels,
+    )
+
+
+@mcp.tool()
+async def list_target_inaccessible_channels(
+    guild_id: str,
+    target_id: str,
+    target_type: str,
+    include_basic_capabilities: bool = False,
+    max_channels: int | None = None,
+) -> dict[str, Any]:
+    return await list_target_inaccessible_channels_impl(
+        guild_id=guild_id,
+        target_id=target_id,
+        target_type=target_type,
+        include_basic_capabilities=include_basic_capabilities,
+        max_channels=max_channels,
     )
 
 

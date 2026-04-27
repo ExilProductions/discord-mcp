@@ -119,8 +119,13 @@ This can be used by any client that supports MCP.
 - `get_channel_permissions` - Get channel permission overwrites
 - `get_category_permissions` - Get category permission overwrites
 - `remove_channel_permissions` - Remove permission overwrites
-- `inspect_role_permissions` - Evaluate effective guild + channel permissions for a role ("View Server As Role")
-- `inspect_member_permissions` - Evaluate effective guild + channel permissions for a member ("View Server As Member")
+- `inspect_role_permissions` - Compact-by-default role permission summary (counts, previews, key capabilities)
+- `inspect_member_permissions` - Compact-by-default member permission summary (counts, previews, key capabilities)
+- `inspect_target_channel_permissions` - Full effective permissions for one target in one channel (detail drill-down)
+- `list_target_accessible_channels` - Compact list of channels a role/member can access
+- `list_target_inaccessible_channels` - Compact list of channels a role/member cannot access
+
+Permission inspection is optimized for AI agent workflows: call summary tools first, then request channel detail only when needed.
 
 ### Message Operations
 - `send_message` - Send a message (supports embeds, TTS, mentions, references)
