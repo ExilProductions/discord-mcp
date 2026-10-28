@@ -333,6 +333,7 @@ async def get_message(channel_id: str, message_id: str) -> dict[str, Any]:
         "mention_everyone": message.mention_everyone,
         "mentions": [str(m.id) for m in message.mentions],
         "channel_mentions": [str(c.id) for c in message.channel_mentions],
+        "embeds": [embed.to_dict() for embed in message.embeds],
         "pinned": message.pinned,
     }
 
@@ -393,6 +394,7 @@ async def get_channel_messages(
                 },
                 "timestamp": message.created_at.isoformat(),
                 "edited_timestamp": message.edited_at.isoformat() if message.edited_at else None,
+                "embeds": [embed.to_dict() for embed in message.embeds],
                 "pinned": message.pinned,
             }
         )

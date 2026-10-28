@@ -8,6 +8,7 @@ class MCPSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_prefix="MCP_",
         case_sensitive=False,
         extra="ignore",
     )
@@ -21,6 +22,7 @@ class DiscordSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_prefix="DISCORD_",
         case_sensitive=False,
         extra="ignore",
     )
@@ -37,6 +39,7 @@ class EventStreamSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_prefix="EVENT_STREAM_",
         case_sensitive=False,
         extra="ignore",
     )

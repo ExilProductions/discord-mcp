@@ -203,8 +203,7 @@ class SessionManager:
                                         "name": getattr(activity, "name", None),
                                     }
 
-                            if hasattr(user, "guilds"):
-                                guild_count = len(user.guilds)
+                            guild_count = len(s.client.guilds)
 
                             if hasattr(user, "avatar") and user.avatar:
                                 bot_avatar_url = str(user.avatar.url)
